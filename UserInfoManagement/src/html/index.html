@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
+    <title>Title</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
+          integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+    <link rel="stylesheet" href="../css/user.css">
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <button class="btn btn-primary" data-toggle="modal" data-target="#addUserModal">Add User</button>
+        <h1 class="text-center text-primary">User Info Management</h1>
+    </div>
+    <table class="text-center table table-striped table-bordered table-hover table-striped">
+        <thead>
+        <tr class="bg-primary text-light">
+            <th>Num of User</th>
+            <th>Name</th>
+            <th>Age</th>
+            <th>Gender</th>
+            <th>Email</th>
+            <th>Operation</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr v-for="(item,index) in users " :key="index">
+            <td>{{ index + 1 }}</td>
+            <td>{{ item.name }}</td>
+            <td>{{ item.age }}</td>
+            <td>{{ item.gender }}</td>
+            <td>{{ item.email }}</td>
+            <td>
+                <button class="btn btn-primary" data-toggle="modal" data-target="#editUser"
+                        @click="user=JSON.parse(JSON.stringify(item))">Edit
+                </button>
+                &nbsp;&nbsp;
+                <button class="btn btn-danger" data-toggle="modal" data-target="#confirmationOfDel"
+                        @click="operatingUserIndex = index">Delete
+                </button>
+            </td>
+        </tr>
+        </tbody>
+        <tr v-if="!prompt">
+            <td colspan="5"></td>
+            <td>
+                <button class="btn btn-success" @click="operatingUserIndex=-1" data-toggle="modal"
+                        data-target="#confirmationOfDel">Delete All
+                </button>
+            </td>
+        </tr>
+
+        <tr v-if="prompt">
+            <td colspan="6"><p>{{ prompt }}</p></td>
+        </tr>
+
+        <tfoot>
+
+        </tfoot>
+
+    </table>
+
+
+    <!-- Modal Form For Deletion-->
+    <div class="modal fade" id="confirmationOfDel" data-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+         aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">Delete Record</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body text-center">
+                    <p v-if="operatingUserIndex > -1">
+                        Are you sure to DELETE {{ users[operatingUserIndex] ? users[operatingUserIndex].name : '' }}?
+                    </p>
+                    <p v-if="operatingUserIndex===-1">
+                        Are you sure to DELETE All records?
+                    </p>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" @click="delUser" data-dismiss="modal">Sure</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Modal For Updating User -->
+    <div class="modal fade" id="editUser" data-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+         aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">Edit Record</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body text-center">
+                    <form action="" method="POST" class="form-horizontal">
+                        <div class="form-group row align-content-center">
+                            <label for="name" class="text-right col-sm-1 col-form-label offset-1">Name:</label>
+                            <div class="col-sm-8">
+                                <input id="name" type="text" class="form-control offset-2" placeholder="Enter Name"
+                                       required
+                                       v-model="user.name">
+                            </div>
+                        </div>
+
+                        <div class="form-group row align-content-center">
+                            <label for="age" class="text-right col-sm-1 col-form-label offset-1">Age:</label>
+                            <div class="col-sm-8">
+                                <input id="age" type="number" class="form-control offset-2" placeholder="Enter Age"
+                                       required
+                                       v-model.number="user.age">
+                            </div>
+                        </div>
+
+                        <div class="form-group row align-content-center">
+                            <label for="gender" class="text-right col-sm-1 col-form-label offset-1">Gender:</label>
+                            <div class="col-sm-6 offset-1" style="display: flex; align-items: center;">
+                                <div class="custom-control custom-radio custom-control-inline">
+                                    <input type="radio" id="male" name="male" class="custom-control-input" value="male"
+                                           v-model="user.gender">
+                                    <label class="custom-control-label" for="male">Male</label>
+                                </div>
+
+                                <div class="custom-control custom-radio custom-control-inline">
+                                    <input type="radio" id="female" name="female" class="custom-control-input"
+                                           value="female"
+                                           v-model="user.gender">
+                                    <label class="custom-control-label" for="female">Female</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group row align-content-center">
+                            <label for="email" class="text-right col-sm-1 col-form-label offset-1">Email:</label>
+                            <div class="col-sm-8">
+                                <input id="email" type="email" class="form-control offset-2" placeholder="Enter Email"
+                                       required
+                                       v-model.trim="user.email">
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" @click="modifyUser">Confirm
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal For adding user -->
+    <div class="modal fade" id="addUserModal" ref="add" data-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+         aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">Add User</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body text-center">
+                    <form action="" method="POST" class="form-horizontal">
+                        <div class="form-group row align-content-center ">
+                            <label for="name" class="text-right col-sm-1 col-form-label offset-sm-1">Name:</label>
+                            <div class="col-sm-8 offset-1" style="display: flex; align-items: center;">
+                                <input id="name" type="text" class="form-control" placeholder="Enter Name" required
+                                       v-model.trim="user.name">
+                            </div>
+                        </div>
+
+                        <div class="form-group row align-content-center">
+                            <label for="age" class="text-right col-sm-1 col-form-label offset-sm-1">Age:</label>
+                            <div class="col-sm-8 offset-1" style="display: flex; align-items: center;">
+                                <input id="age" type="number" class="form-control" placeholder="Enter Age" required
+                                       v-model.number="user.age">
+                            </div>
+                        </div>
+
+                        <div class="form-group row align-content-center">
+                            <label for="gender" class="text-right col-sm-1 col-form-label offset-sm-1">Gender:</label>
+                            <div class="col-sm-8" style="display: flex; align-items: center;">
+                                <div class="custom-control custom-radio custom-control-inline offset-2">
+                                    <input type="radio" id="male" name="male" class="custom-control-input" value="male"
+                                           v-model="user.gender">
+                                    <label class="custom-control-label" for="male">Male</label>
+                                </div>
+
+                                <div class="custom-control custom-radio custom-control-inline">
+                                    <input type="radio" id="female" name="female" class="custom-control-input"
+                                           value="female"
+                                           v-model="user.gender">
+                                    <label class="custom-control-label" for="female">Female</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group row align-content-center">
+                            <label for="email" class="text-right col-sm-1 col-form-label offset-sm-1">Email:</label>
+                            <div class="col-sm-8 offset-1" style="display: flex; align-items: center;">
+                                <input id="email" type="email" class="form-control" placeholder="Enter Email" required
+                                       v-model.trim="user.email">
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary"
+                            :disabled="!user.name||!user.age||!user.email"
+                            @click="addUser" data-dismiss="modal">Add
+                    </button> &nbsp;&nbsp;
+                    <button type="reset" class="btn btn-primary " @click="resetUser" data-dismiss="modal">Reset</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js"></script>
+<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+<script src="../js/user.js"></script>
+</html>
