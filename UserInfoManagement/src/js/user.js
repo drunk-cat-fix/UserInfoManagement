@@ -1,15 +1,7 @@
 Vue.createApp({
     data() {
         return {
-            users: [
-                {
-                    id: 12111,
-                    name: 'test',
-                    age: 18,
-                    gender: 'male',
-                    email: 'fafasdf',
-                }
-            ],
+            users: [],
             user: {
                 id: null,
                 name: '',
@@ -18,7 +10,6 @@ Vue.createApp({
                 email: '',
             },
             operatingUserIndex: undefined,
-            prompt:null,
         }
     },
     methods: {
@@ -49,7 +40,7 @@ Vue.createApp({
         delUser() {
             if (this.operatingUserIndex === -1) {
                 this.users = [];
-                this.prompt='No Users';
+                this.prompt = 'No Users';
             } else {
                 this.users.splice(this.operatingUserIndex, 1);
             }
@@ -64,9 +55,23 @@ Vue.createApp({
                 }
             }
         },
-        delAll() {
 
-        },
+    },
+    watch: {
+        // Monitor the users`s modification
+        users: {
+            handler: newValue => {
+                localStorage.setItem('users', JSON.stringify(newValue));
+            },
+            deep: true,
+        }
+    },
+    mounted() {
+        // Once the programme has been mounted, then read data from local storage
+        let data = localStorage.getItem('users');
+        if (data !== null) {
+            this.users = JSON.parse(data);
+        }
 
     },
 }).mount('.container');
